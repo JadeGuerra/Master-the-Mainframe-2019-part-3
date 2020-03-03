@@ -1,0 +1,28 @@
+/* REXX */
+/*  ISFSLASH  */
+/*----------------------------------------------*/                
+"allocate dataset(ch15.output(cmd)) file(msgout) shr reuse"     
+"execio 0 diskw msgout (stem msg. open"                           
+/*----------------------------------------------*/
+rc=isfcalls('ON')
+isfsysid="s0w1"
+isfdate="mmddyyyy /"
+currday=date("C")
+currday=currday-1 /* Logons at last 24h */
+isflogstartdate=date("U",currday,"C")
+isflogstarttime=time("N")
+isflogstopdate=date("U")
+isflogstoptime=time("N")
+/*----------------------------------------------*/
+cmd1 = 'D TS,'||userid()
+  mycmd.0=2
+  mycmd.1="D T"
+  mycmd.2=cmd1
+Address SDSF ISFSLASH "("mycmd.") (WAIT)"
+  do i=1 to isfulog.0
+    say isfulog.i
+  end  
+rc=isfcalls('OFF')
+"execio 0 diskw msgout (FINIS"
+"free file(msgout)"                                  
+exit 

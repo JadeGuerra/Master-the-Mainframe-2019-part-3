@@ -1,0 +1,111 @@
+/* REXX */                                                        
+/*----------------------------------------------*/                
+"allocate dataset(ch15.output(strng)) file(msgout) shr reuse"     
+"execio 0 diskw msgout (stem msg. open"                           
+/*----------------------------------------------*/
+rc=isfcalls('ON')
+isfsysid="s0w1"
+isfdate="mmddyyyy /"
+currday=date("C")
+currday=currday-2
+isflogstartdate=date("U",currday,"C")
+isflogstarttime=time("N")
+isflogstopdate=date("U")
+isflogstoptime=time("N")
+/*----------------------------------------------*/
+Say '       User id: ' userid()
+Say ' '
+Say '    * System Information * '
+Say '       * Master Report *   '
+Say ' '
+Say '    ** System Date is ' date()
+Say '    ** Time: ' time()
+Say ' '
+/*----------------------------------------------*/
+Address SDSF "ISFEXEC SYS"
+if rc<>0 then
+Exit rc
+/*----------------------------------------------*/
+fixedField = word(isfcols,1)
+do ix=1 to isfrows
+    do jx=1 to words(isfcols)
+        col = word(isfcols,jx)
+        Select                                                           
+            When col = SYSNAME   then
+                Say 'System name:________________________________' value(col"."ix)      
+            When col = SYSLEVEL     then 
+                Say 'Operating system level: ____________________' value(col"."ix)
+            When col = CPUPR     then 
+                Say 'CPU percent busy for the system: ___________' value(col"."ix)
+            When col = SIO then 
+                Say 'Start I/O rate EXCPs per second: ___________' value(col"."ix)
+            When col = SYSLEVEL	then
+                Say 'Operating system level:  ___________________' value(col"."ix)
+            When col = SYSPLEX then 
+                Say	'Sysplex name: ______________________________' value(col"."ix)
+            When col = VMUSER then 
+                Say 'VM user ID: ________________________________' value(col"."ix)
+            When col = JESNAME then 
+                Say	'Job entry subsystem name: __________________' value(col"."ix)
+            When col = JESNODE then 
+                Say 'JES node name: _____________________________' value(col"."ix)
+            When col = SMF then 
+                Say	'SMF system ID: _____________________________' value(col"."ix)
+
+/*----------------------------------------------*/
+/***Usage Information***/
+/*----------------------------------------------*/  
+            When col = CSAPCT then
+                Say 'Common storage area % used: ________________' value(col"."ix)
+            When col = AUXPCT then
+                Say 'Auxiliary storage % used: __________________' value(col"."ix)    
+            When col = SQAPCT then
+                Say 'System queue area % used: __________________' value(col"."ix)
+            When col = SPOOLPCT then 
+                Say	'Spool utilization for primary JES: _________' value(col"."ix)
+            When col = REAL then 
+                Say	'Number of real storage frames online: ______' value(col"."ix)
+            When col = REALAFC then 
+                Say	'Real storage available frame count: ________' value(col"."ix)
+            When col = FIXPCT then 
+                Say 'Real storage frames that are fixed %: ______' value(col"."ix)
+            When col = MAXASID then 
+                Say	'Maximum number of address spaces: __________' value(col"."ix)
+            When col = FREEASID then 
+                Say 'Number of free address spaces: _____________' value(col"."ix)
+            When col = BADASID then 
+                Say 'Number of non-reusable address spaces: _____' value(col"."ix)
+            When col = STCNUM then 
+                Say 'Number of active started tasks: ____________' value(col"."ix)
+            When col = TSUNUM then 
+                Say 'Number of active TSO users: ________________' value(col"."ix)
+            When col = JOBNUM then 
+                Say 'Number of active batch jobs: _______________' value(col"."ix)
+
+/*----------------------------------------------*/
+/***Harware Information***/
+/*----------------------------------------------*/
+            When col = HWNAME then 
+                Say 'Hardware name: _____________________________' value(col"."ix)
+            When col = CPC then 
+                Say	'Central Processor Complex node descriptor: _' value(col"."ix)
+            When col = MSU then 
+                Say	'MSU rating for processor: __________________' value(col"."ix)
+            When col = CPUNUM then 
+                Say 'Number of online CPUs: _____________________' value(col"."ix)
+            When col = ZAAPNUM then 
+                Say 'Number of online zAAP processors: __________' value(col"."ix)
+            When col = ZIIPNUM then 
+                Say 'Number of online zIIP processors: __________' value(col"."ix)
+            When col = OSCONFIG then 
+                Say 'Operating system configuration: ____________' value(col"."ix)
+        Otherwise nop
+    end
+end
+/*----------------------------------------------*/
+"execio * diskw msgout (stem msg. "
+/*----------------------------------------------*/
+rc=isfcalls("off")
+"execio 0 diskw msgout (FINIS"
+"free file(msgout)"
+exit

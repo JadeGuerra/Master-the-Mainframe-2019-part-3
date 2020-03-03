@@ -1,0 +1,32 @@
+/* REXX */                                                     
+/*----------------------------------------------*/             
+clrscn
+say '   System Information Utility    '
+say ' '
+say '   Information requested:'
+say '   1. Report specific message identifier found in SYSLOG' 
+say '   2. Report from System Information, SYS'
+say '   3. Report string found in SYSLOG'
+say '   4. Report TSO logons'
+say '   5. Report specific ID successful TSO logon'
+say '   6. Report display command executions'
+say '   7. Report from Active Users Panel, DA'
+say '   8. Report from Link List Panel, LNK '
+say '   9. Report from Status Panel, ST '
+say ' '
+say '   Enter report number'
+pull answer
+answer = strip(answer)
+Select
+ When answer = 1 then 'exec ch15(msgid)'
+ When answer = 2 then 'exec ch15(sys)'
+ When answer = 3 then 'exec ch15(strng)'
+ When answer = 4 then 'exec ch15(logon)'
+ When answer = 5 then 'exec ch15(sulogon)'
+ When answer = 6 then 'exec ch15(cmd)'
+ When answer = 7 then 'exec ch15(da)'
+ When answer = 8 then 'exec ch15(lnk)'
+ When answer = 9 then 'exec ch15(st)'
+ Otherwise say 'Invalid report selection'
+End
+Exit 0

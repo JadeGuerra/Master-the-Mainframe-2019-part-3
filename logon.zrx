@@ -1,0 +1,79 @@
+/* REXX */                                                        
+/*----------------------------------------------*/                
+"allocate dataset(ch15.output(logon)) file(msgout) shr reuse"     
+"execio 0 diskw msgout (stem msg. open"                           
+/*----------------------------------------------*/
+rc=isfcalls('ON')
+isfsysid="s0w1"
+isfdate="mmddyyyy /"
+currday=date("C")
+currday=currday-1 /* Logons at last 24h */
+isflogstartdate=date("U",currday,"C")
+isflogstarttime=time("N")
+isflogstopdate=date("U")
+isflogstoptime=time("N")
+/*---------------------------------------------*/
+say ' '                                                       
+say '------------------------------------------------------'
+say '           ***** Report TSO Logons ***** '
+say '             * At the last 24 hours *              '      
+/*----------------------------------------------*/
+strng = 'tso'
+isffind = strng
+isffindlim = 9999999
+isfscrolltype = 'FINDNEXT'
+isflinelim = 1
+/*----------------------------------------------*/                
+do until isfnextlinetoken=''
+   Address SDSF "ISFLOG READ TYPE(SYSLOG)"
+   lrc=rc
+   if lrc>4 then
+        do
+            call msgrtn
+            exit 20
+        end
+/*----------------------------------------------*/
+/*-- Process the returned variables ------------*/
+/*----------------------------------------------*/
+        do ix=1 to isfline.0
+            call OutputMessage                                  
+            /*-------------------------*/
+            If ReturnMessage = 'IKJ606I' then do
+                say '------------------------------------------------------'
+                say ' '
+                say isflastlinetime isflastlinedate
+                say ' '
+                say MessageLine
+                say ' '
+                end
+            Else If ReturnMessage = '$HASP100' then do
+                say '------------------------------------------------------'
+                say ' '
+                say isflastlinetime isflastlinedate
+                say ' '
+                say 'User id: ' UserID
+                say ' '
+                end     
+            ix = ix + 1                            
+        end 
+/*----------------------------------------------*/
+/* Continue reading SYSLOG where we left off    */
+/*----------------------------------------------*/
+    isfstartlinetoken = isfnextlinetoken
+end
+rc=isfcalls("off")
+"execio 0 diskw msgout (FINIS"
+"free file(msgout)"
+exit
+/*----------------------------------------------*/
+OutputMessage:
+/* Return Message */
+ReturnMessage = substr(isfline.ix,57,8)
+/* Message line */
+MessageLine   = substr(isfline.ix,65,56)
+/* Define user id if has */
+UserID        = substr(isfline.ix,66,6) 
+/* define mensagem para userid */
+MessageID = substr(isfline.ix,74,50)
+
+return
